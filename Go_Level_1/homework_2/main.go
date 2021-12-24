@@ -18,6 +18,22 @@ func main() {
 	fmt.Println("Диаметр равен ", getCircleDiameter(circleArea))
 	fmt.Println("Длина окружности равна ", getCircumference(circleArea))
 
+	var number int
+	fmt.Println("Введите трехзначное число:")
+	_, err := fmt.Scan(&number)
+	if err != nil {
+		fmt.Println("Ошибка ввода числа:", err.Error())
+		return
+	}
+
+	if number > 999 || number < 100 {
+		fmt.Println("Нужно было ввести ТРЕХзначное число....")
+		return
+	}
+
+	fmt.Println("Количество сотен:", number / 100)
+	fmt.Println("Количество десятков:", (number % 100) / 10)
+	fmt.Println("Количество единиц:", number % 10)
 }
 
 func getRectangleArea(a int, b int) (area int) {
