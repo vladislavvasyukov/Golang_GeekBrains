@@ -12,7 +12,6 @@ import (
 type CalculationError struct {
 	message     string
 	createdTime time.Time
-	// посмотреть, как получить текущее время
 }
 
 func (e CalculationError) Error() string {
