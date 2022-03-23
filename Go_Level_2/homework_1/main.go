@@ -1,46 +1,54 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"math"
+	"os"
+	"time"
 )
 
 type CalculationError struct {
-	message string
+	message     string
+	createdTime time.Time
+	// посмотреть, как получить текущее время
 }
 
 func (e CalculationError) Error() string {
-	return fmt.Sprintf("Something bad happened: %s", e.message)
+	return fmt.Sprintf("CalculationError<%s> %s", e.message, e.createdTime)
 }
 
 func main() {
-	value, err := tmp()
+	result, err := release()
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		fmt.Println(result)
 	}
-	fmt.Println("value-", value)
+	fmt.Println("continue to work...")
+
+	var filename string
+	fmt.Println("Введите название файла:")
+	fmt.Scan(&filename)
+
+	createFile(filename)
 }
 
-func tmp() (string, error) {
-	var err error = nil
-	var value string = "initial"
+func release() (result float64, err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			err = CalculationError{message: "I do not know how to add error"}
-			fmt.Println("something bad happs")
-			return err
+			err = CalculationError{message: " some error ", createdTime: time.Now()}
+			fmt.Println(e)
 		}
 	}()
-	value = showCalculationExample()
-	return value, err
+	result, _ = calculate(34, 0, "/")
+	return result, nil
 }
 
-func showCalculationExample() string {
-	panic("all bad")
-}
-
-func calculate(numberOne float64, numberTwo float64, operation string) float64 {
+func calculate(numberOne float64, numberTwo float64, operation string) (float64, error) {
 	var result float64
+	var err error
 
 	switch operation {
 	case "+":
@@ -48,13 +56,30 @@ func calculate(numberOne float64, numberTwo float64, operation string) float64 {
 	case "-":
 		result = numberOne - numberTwo
 	case "/":
+		if numberTwo == 0 {
+			panic(errors.New("divide by zero"))
+		}
 		result = numberOne / numberTwo
 	case "*":
 		result = numberOne * numberTwo
 	case "**":
 		result = math.Pow(numberOne, numberTwo)
 	default:
-		panic("Unknown operation")
+		err = errors.New("неизвестная операция")
 	}
-	return result
+	return result, err
+}
+
+func createFile(filename string) {
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func() {
+		e := file.Close()
+		if e != nil {
+			log.Fatal(e)
+		}
+	}()
 }
