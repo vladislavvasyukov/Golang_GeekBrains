@@ -1,15 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func Worker(ch chan<- struct{}) {
 	ch <- struct{}{}
 }
 
 func WorkerHandler(workerQuantity int, handler func()) {
-	// Запускаются воркеры в указанном количестве. Каждый выполняет свою работу (handler) в переданный ему канал и
-	// заверщает свою работу. Когда количество выполненных воркеров достигнет лимита, канал закроется и произойдет
-	// выход из функции
 	jobCh := make(chan struct{})
 	limit := 0
 
