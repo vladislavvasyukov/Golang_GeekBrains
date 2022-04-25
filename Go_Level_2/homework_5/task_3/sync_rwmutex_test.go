@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"sync"
 	"testing"
 )
@@ -42,38 +43,31 @@ func SetAdd(b *testing.B, p int) {
 	})
 }
 
-func SetHas(b *testing.B, p int) {
+func SetWork(b *testing.B, message string, border float32) {
 	var set = NewSet()
-	b.Run("", func(b *testing.B) {
-		b.SetParallelism(p)
+
+	b.Run(message, func(b *testing.B) {
+		b.SetParallelism(10000)
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				set.Has(1)
+				if rand.Float32() <= border {
+					set.Add(1)
+				} else {
+					set.Has(1)
+				}
 			}
 		})
 	})
 }
 
-func BenchmarkSetAdd100(b *testing.B) {
-	SetAdd(b, 100)
+func BenchmarkSetWork10_90(b *testing.B) {
+	SetWork(b, "Mutex: 10% write 90% read", 0.1)
 }
 
-func BenchmarkSetHas900(b *testing.B) {
-	SetHas(b, 900)
+func BenchmarkSetWork50_50(b *testing.B) {
+	SetWork(b, "Mutex: 50% write 50% read", 0.5)
 }
 
-func BenchmarkSetAdd500(b *testing.B) {
-	SetAdd(b, 500)
-}
-
-func BenchmarkSetHas500(b *testing.B) {
-	SetHas(b, 500)
-}
-
-func BenchmarkSetAdd900(b *testing.B) {
-	SetAdd(b, 900)
-}
-
-func BenchmarkSetHas100(b *testing.B) {
-	SetHas(b, 100)
+func BenchmarkSetWork90_10(b *testing.B) {
+	SetWork(b, "Mutex: 90% write 10% read", 0.9)
 }
