@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 )
 
-const count = 10
+const count = 1000
 
 func main() {
 	var (
