@@ -15,10 +15,10 @@ func main() {
 	wg.Add(counter)
 
 	for i := 0; i < counter; i++ {
-		go func(number int) {
+		go func(i int) {
 			mu.Lock()
 			defer mu.Unlock()
-			fmt.Println(number)
+			fmt.Println(i)
 			wg.Done()
 		}(i)
 	}
